@@ -1,0 +1,126 @@
+{
+  "name": "todo-in-scope",
+  "displayName": "todo-in-scope",
+  "description": "TODO highlighter, that is able to cherry-pick todos in your current scope (all project / current branch / current commit)",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.65.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "*"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "todo-in-scope.toggle-highlight",
+        "title": "Todo in scope: Toggle todos highlight"
+      },
+      {
+        "command": "todo-in-scope.annotate-project",
+        "title": "Todo in scope: List todos in all project"
+      },
+      {
+        "command": "todo-in-scope.annotate-branch",
+        "title": "Todo in scope: List todos in current branch"
+      },
+      {
+        "command": "todo-in-scope.annotate-commit",
+        "title": "Todo in scope: List todos in current commit"
+      }
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "TODO In Scope",
+      "properties": {
+        "todo-in-scope.isEnabled": {
+          "type": "boolean",
+          "description": "Enable or disable the highlight",
+          "default": true
+        },
+        "todo-in-scope.defaultStyle.color": {
+          "type": "string",
+          "description": "The text color",
+          "default": "white"
+        },
+        "todo-in-scope.defaultStyle.backgroundColor": {
+          "type": "string",
+          "description": "The text background color",
+          "default": "yellow"
+        },
+        "todo-in-scope.defaultStyle.rulerColor": {
+          "type": "string",
+          "description": "The color of the ruler mark on the scroll bar",
+          "default": "yellow"
+        },
+        "todo-in-scope.keywords": {
+          "type": "array",
+          "description": "Additional keywords and styles for them",
+          "items": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "word": {
+                    "type": "string",
+                    "description": "Custom word to be highlighted"
+                  },
+                  "color": {
+                    "type": "string",
+                    "description": "The word color"
+                  },
+                  "backgroundColor": {
+                    "type": "string",
+                    "description": "The word background color"
+                  },
+                  "rulerColor": {
+                    "type": "string",
+                    "description": "The color of the ruler mark on the scroll bar"
+                  }
+                }
+              }
+            ]
+          },
+          "default": [
+            {
+              "word": "TODO"
+            },
+            {
+              "word": "NOTE",
+              "color": "white",
+              "backgroundColor": "blue",
+              "rulerColor": "blue"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/glob": "^7.2.0",
+    "@types/mocha": "^9.1.0",
+    "@types/node": "14.x",
+    "@types/vscode": "^1.65.0",
+    "@typescript-eslint/eslint-plugin": "^5.12.1",
+    "@typescript-eslint/parser": "^5.12.1",
+    "@vscode/test-electron": "^2.1.2",
+    "eslint": "^8.9.0",
+    "glob": "^7.2.0",
+    "mocha": "^9.2.1",
+    "typescript": "^4.6.2"
+  }
+}
