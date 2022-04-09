@@ -60,6 +60,49 @@
           "description": "The color of the ruler mark on the scroll bar",
           "default": "yellow"
         },
+        "todo-in-scope.includedFiles": {
+          "type": "array",
+          "default": [
+            "**/*.rb",
+            "**/*.py",
+            "**/*.js",
+            "**/*.jsx",
+            "**/*.ts",
+            "**/*.tsx",
+            "**/*.html",
+            "**/*.php",
+            "**/*.css",
+            "**/*.scss"
+          ],
+          "description": "Glob patterns that define included files for annotating the whole project"
+        },
+        "todo-in-scope.excludedFiles": {
+          "type": "array",
+          "description": "Glob patterns that exclude files from annotation",
+          "default": [
+            "**/node_modules/**",
+            "**/bower_components/**",
+            "**/dist/**",
+            "**/build/**",
+            "**/.vscode/**",
+            "**/.github/**",
+            "**/_output/**",
+            "**/*.min.*",
+            "**/*.map",
+            "**/.next/**"
+          ]
+        },
+        "todo-in-scope.maxFiles": {
+          "type": "number",
+          "description": "Max number of filess that will be processed",
+          "default": 2500
+        },
+        "todo-in-scope.keywordsForAnnotation": {
+          "type": "array",
+          "items": "string",
+          "default": ["TODO", "DEBUG"],
+          "description": "Keywords that will be included in annotation"
+        },
         "todo-in-scope.keywords": {
           "type": "array",
           "description": "Additional keywords and styles for them",

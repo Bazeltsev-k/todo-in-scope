@@ -77,7 +77,7 @@ function showAnnotationsForGit(settings: Settings, diffFiles: string[], gitComma
 
   let outputChannel = vscode.window.createOutputChannel("Todos in scope");
   textDocumentsFromMatchedFiles(
-    settings, `{${diffFiles.join(",")}}`, undefined,
+    settings, `{${diffFiles.join(",")}}`, settings.excludedFiles,
     (filePath, line, match) => {
       let fileRanges = filePathsDiffs[filePath.replace(`${settings.curentFolderPath}/`, "")];
       if (!fileRanges) {
@@ -95,7 +95,8 @@ function showAnnotationsForGit(settings: Settings, diffFiles: string[], gitComma
 function showAnnotationsForProject(settings: Settings) {
   let outputChannel = vscode.window.createOutputChannel("Todos in scope");
 
-  textDocumentsFromMatchedFiles(settings, "{**/*.js,**/*.ts,**/*.rb}", "**/node_modules/**",
+  textDocumentsFromMatchedFiles(
+    settings, settings.includedFiles, settings.excludedFiles,
     (filePath, line, match) => {
       outputChannel.appendLine(`${filePath}:${line + 1} : \n\t${match}`);
     },
@@ -110,10 +111,10 @@ function textDocumentsFromMatchedFiles(
   afterEachFileCallback: () => void,
   afterAllFilesCallback: () => void
 ) {
-  vscode.workspace.findFiles(includeGlob, excludeGlob, 2500).then((files) => {
+  vscode.workspace.findFiles(includeGlob, excludeGlob, settings.maxFiles).then((files) => {
     files.forEach((file) => {
       vscode.workspace.openTextDocument(file).then((file) => {
-        for (let match of file.getText().matchAll(settings.buildRegexp())) {
+        for (let match of file.getText().matchAll(settings.buildRegexp(true))) {
           let line: vscode.TextLine | undefined = undefined;
           if (match.index) {
             line = file.lineAt(file.positionAt(match.index));
