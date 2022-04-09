@@ -114,7 +114,7 @@ function textDocumentsFromMatchedFiles(
   vscode.workspace.findFiles(includeGlob, excludeGlob, settings.maxFiles).then((files) => {
     files.forEach((file) => {
       vscode.workspace.openTextDocument(file).then((file) => {
-        for (let match of file.getText().matchAll(settings.buildRegexp(true))) {
+        for (let match of file.getText().matchAll(settings.buildRegexp("annotation"))) {
           let line: vscode.TextLine | undefined = undefined;
           if (match.index) {
             line = file.lineAt(file.positionAt(match.index));

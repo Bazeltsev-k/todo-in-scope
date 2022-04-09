@@ -41,6 +41,7 @@ const DEFAULT_EXCLUDED_FILES = [
 ];
 const DEFAULT_MAX_FILES = 2500;
 const DEFAULT_KEYWORDS_FOR_ANNOTATION = ["TODO", "DEBUG"];
+const DEFAULT_KEYWORDS_FOR_HOOK = ["TODO"];
 const DEFAULT_ENABLED = true;
 
 export class Settings {
@@ -51,17 +52,26 @@ export class Settings {
     public excludedFiles: string,
     public maxFiles: number,
     public keywordsForAnnotation: string[],
+    public keywordsForHook: string[],
     public keywords: Keyword = {},
     public tmpDecorationTypes: DecorationTypes = {},
     public curentFolderPath: string = ""
   ) {}
 
-  buildRegexp(forAnnotation: boolean = false): RegExp {
-    let includedKeywords = Object.keys(this.keywords);
-    if (forAnnotation) {
-      includedKeywords = includedKeywords.filter((keyword) => this.keywordsForAnnotation.includes(keyword));
+  buildRegexp(useCase: string = "decoration"): RegExp {
+    let usedKeywords = "";
+    switch(useCase) {
+      case "decoration": {
+        usedKeywords = Object.keys(this.keywords).join("|");
+      }
+      case "annotation": {
+        usedKeywords = this.keywordsForAnnotation.join("|");
+      }
+      case "hook": {
+        usedKeywords = this.keywordsForHook.join("|");
+      }
     }
-    return new RegExp(`^ {0,}.+(${includedKeywords.join("|")})(\\(\\w+\\)){0,}:.+$`, "gm");
+    return new RegExp(`^ {0,}.+(${usedKeywords})(\\(\\w+\\)){0,}:.+$`, "gm");
   }
 
   static settingsFromConfig(): Settings {
@@ -76,7 +86,8 @@ export class Settings {
       `{${defaultIncludedFiles.join(",")}}`,
       `{${defaultExcludedFiles.join(",")}}`,
       configuration.get("maxFiles") || DEFAULT_MAX_FILES,
-      configuration.get("keywordsForAnnotation") || DEFAULT_KEYWORDS_FOR_ANNOTATION
+      configuration.get("keywordsForAnnotation") || DEFAULT_KEYWORDS_FOR_ANNOTATION,
+      configuration.get("keywordsForHook") || DEFAULT_KEYWORDS_FOR_HOOK
     );
     (configuration.get("keywords") as any[]).forEach(keyword => {
       settings.keywords[keyword.word] = {

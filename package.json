@@ -101,11 +101,17 @@
           "type": "array",
           "items": "string",
           "default": ["TODO", "DEBUG"],
-          "description": "Keywords that will be included in annotation"
+          "description": "Keywords that will be included in annotation. You can have different keywords for decoration/annotation/git hook"
+        },
+        "todo-in-scope.keywordsForHook": {
+          "type": "array",
+          "items": "string",
+          "default": ["TODO"],
+          "description": "Keywords that will be included in pre-commit hook. You can have different keywords for decoration/annotation/git hook"
         },
         "todo-in-scope.keywords": {
           "type": "array",
-          "description": "Additional keywords and styles for them",
+          "description": "Keywords for decoration and styles for them. You can have different keywords for decoration/annotation/git hook",
           "items": {
             "anyOf": [
               {
