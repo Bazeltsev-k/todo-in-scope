@@ -2,59 +2,64 @@
 import * as vscode from "vscode";
 
 // Misc
-import * as misc from "./misc";
+import { Settings } from "./settings";
+import * as decorations from "./decorations";
+import * as annotations from "./annotations";
 
 export function activate(context: vscode.ExtensionContext) {
   let workspace = vscode.workspace;
   let window = vscode.window;
-  let settings = misc.initSettings();
+  let settings = Settings.settingsFromConfig();
   let activeEditor = window.activeTextEditor;
 
   // Commands
 	context.subscriptions.push(
     vscode.commands.registerCommand("todo-in-scope.toggle-highlight", () => {
-      misc.toggleHighlight(activeEditor, settings);
+      decorations.toggleHighlight(activeEditor, settings);
 	  })
   );
   context.subscriptions.push(
-    vscode.commands.registerCommand("todo-in-scope.toggle-highlight", () => {
-      vscode.window.showErrorMessage("TODO: add functionality for this command");
-    })
-  );
-  context.subscriptions.push(
     vscode.commands.registerCommand("todo-in-scope.annotate-project", () => {
-      vscode.window.showErrorMessage("TODO: add functionality for this command");
+      annotations.annotate("project", settings);
     })
   );
   context.subscriptions.push(
     vscode.commands.registerCommand("todo-in-scope.annotate-branch", () => {
-      vscode.window.showErrorMessage("TODO: add functionality for this command");
+      annotations.annotate("branch", settings);
     })
   );
   context.subscriptions.push(
     vscode.commands.registerCommand("todo-in-scope.annotate-commit", () => {
+      annotations.annotate("commit", settings);
+    })
+  );
+  context.subscriptions.push(
+    vscode.commands.registerCommand("todo-in-scope.add-precommit-hook", () => {
       vscode.window.showErrorMessage("TODO: add functionality for this command");
     })
   );
 
-  misc.applyDecorations(activeEditor, settings);
+  decorations.applyDecorations(activeEditor, settings);
 
   // Handlers
   window.onDidChangeActiveTextEditor((editor) => {
     if(activeEditor = editor) {
-      misc.applyDecorations(activeEditor, settings);
+      decorations.applyDecorations(activeEditor, settings);
     }
   }, null, context.subscriptions);
 
   workspace.onDidChangeConfiguration((event) => {
-    settings = misc.initSettings();
-    // TODO: toggle highlight when disabled
-    misc.applyDecorations(activeEditor, settings);
+    settings = Settings.settingsFromConfig();
+    if (settings.isEnabled) {
+      decorations.applyDecorations(activeEditor, settings);
+    } else {
+      decorations.clearDecorations(settings.tmpDecorationTypes);
+    }
   }, null, context.subscriptions);
 
   workspace.onDidChangeTextDocument((event) => {
     if(activeEditor && event.document === activeEditor.document) {
-      misc.applyDecorations(activeEditor, settings);
+      decorations.applyDecorations(activeEditor, settings);
     }
   }, null, context.subscriptions);
 }

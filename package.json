@@ -30,6 +30,10 @@
       {
         "command": "todo-in-scope.annotate-commit",
         "title": "Todo in scope: List todos in current commit"
+      },
+      {
+        "command": "todo-in-scope.add-precommit-hook",
+        "title": "Todo in scope: Add precommit hook"
       }
     ],
     "configuration": {
@@ -44,7 +48,7 @@
         "todo-in-scope.defaultStyle.color": {
           "type": "string",
           "description": "The text color",
-          "default": "white"
+          "default": "black"
         },
         "todo-in-scope.defaultStyle.backgroundColor": {
           "type": "string",
@@ -89,13 +93,22 @@
           },
           "default": [
             {
-              "word": "TODO"
+              "word": "TODO",
+              "color": "white",
+              "backgroundColor": "#c76d00",
+              "rulerColor": "#c76d00"
             },
             {
               "word": "NOTE",
               "color": "white",
               "backgroundColor": "blue",
               "rulerColor": "blue"
+            },
+            {
+              "word": "DEBUG",
+              "color": "white",
+              "backgroundColor": "red",
+              "rulerColor": "red"
             }
           ]
         }

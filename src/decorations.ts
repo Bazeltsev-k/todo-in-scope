@@ -2,41 +2,19 @@
 import * as vscode from "vscode";
 
 // Misc
-import { DefaultStyleIo, Settings, DecorationTypes } from "./settings";
+import { Settings, DecorationTypes } from "./settings";
 
-export function initSettings() {
-  let workspace = vscode.workspace;
-  let configuration = workspace.getConfiguration("todo-in-scope");
-  let defaultStyle = configuration.get("defaultStyle") as DefaultStyleIo;
-  let settings = new Settings(
-    configuration.get("isEnabled"),
-    { color: defaultStyle.color, backgroundColor: defaultStyle.backgroundColor, overviewRulerColor: defaultStyle.rulerColor },
-    {}
-  );
-  (configuration.get("keywords") as any[]).forEach(keyword => {
-    settings.keywords[keyword.word] = {
-      color: keyword.color || defaultStyle.color,
-      backgroundColor: keyword.backgroundColor || defaultStyle.backgroundColor,
-      overviewRulerColor: keyword.rulerColor || defaultStyle.rulerColor
-    };
-  });
-
-  return settings;
-}
 
 export function applyDecorations(activeEditor: vscode.TextEditor | undefined, settings: Settings) {
-  // Return if there are no active editor or settings are disabled
   if (!activeEditor || !settings.isEnabled) {
     return;
   }
-  // This will clear all the decoration types
   clearDecorations(settings.tmpDecorationTypes);
 
   // Receiving regex of current editor for highlighting
   let text = activeEditor.document.getText();
-  let keywords = Object.keys(settings.keywords).join("|"); // TODO|NOTE|DEBUG...
-  let regexp = new RegExp(`^ {0,}.+(${keywords})(\\(\\w+\\)){0,}:`, "gm");
-  let result = text.matchAll(regexp);
+  let result = text.matchAll(settings.buildRegexp());
+
   let decorationTypes: DecorationTypes = {};
 
   // This loop constructs decorationTypes map
@@ -89,7 +67,7 @@ function setDecorations(activeEditor: vscode.TextEditor, decorationTypes: Decora
   settings.tmpDecorationTypes = decorationTypes;
 }
 
-function clearDecorations(decorationTypes: DecorationTypes) {
+export function clearDecorations(decorationTypes: DecorationTypes) {
   Object.keys(decorationTypes).forEach((key) => {
     let decorationType = decorationTypes[key];
     decorationType.decoration.dispose();
