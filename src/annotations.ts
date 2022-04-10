@@ -19,50 +19,55 @@ export function annotate(scope: string, settings: Settings) {
     vscode.window.showErrorMessage("Git should be initialized in current project for this command to work");
     return;
   }
-  showAnnotations(scope, settings);
+  vscode.window.withProgress({
+    location: vscode.ProgressLocation.Notification,
+    title: "Annotating files",
+    cancellable: false
+  }, (progress) => {
+    progress.report({ message: "Going through files, picking todos" });
+    return showAnnotations(scope, settings) as Thenable<any>;
+  });
 }
 
-function showAnnotations(scope: string, settings: Settings) {
+function showAnnotations(scope: string, settings: Settings) : Thenable<any> | undefined {
   switch(scope) {
     case "project": {
-      showAnnotationsForProject(settings);
-      break;
+      return showAnnotationsForProject(settings);
     }
     case "branch": {
-      showAnnotationsForBranch(settings);
-      break;
+      return showAnnotationsForBranch(settings);
     }
     case "commit": {
-      showAnnotationsForCommit(settings);
-      break;
+      return showAnnotationsForCommit(settings);
     }
   }
+  return undefined;
 }
 
-function showAnnotationsForCommit(settings: Settings) {
-  let diffFiles = systemCommands.runCommand(`git -C ${settings.curentFolderPath} diff --name-only`).trim().split("\n");
+function showAnnotationsForCommit(settings: Settings) : Thenable<any> {
+  let diffFiles = systemCommands.runCommand(`git -C ${settings.curentFolderPath} diff --name-only --cached`).trim().split("\n");
   if (diffFiles.length === 1 && diffFiles[0] === "") {
     vscode.window.showInformationMessage("No diff found");
   }
-  showAnnotationsForGit(
+  return showAnnotationsForGit(
     settings, diffFiles,
-    (filePath) => systemCommands.runCommand(`git -C ${settings.curentFolderPath} diff ${filePath}`)
+    (filePath) => systemCommands.runCommand(`git -C ${settings.curentFolderPath} diff --cached ${filePath}`)
   );
 }
 
-function showAnnotationsForBranch(settings: Settings) {
+function showAnnotationsForBranch(settings: Settings) : Thenable<any> {
   let mainBranch = "master";
   let diffFiles = systemCommands.runCommand(`git -C ${settings.curentFolderPath} diff ${mainBranch} --name-only`).trim().split("\n");
   if (diffFiles.length === 0) {
     vscode.window.showInformationMessage(`No diff between current branch and ${mainBranch}`);
   }
-  showAnnotationsForGit(
+  return showAnnotationsForGit(
     settings, diffFiles,
     (filePath) => systemCommands.runCommand(`git -C ${settings.curentFolderPath} diff ${mainBranch}:${filePath} ${filePath}`)
   );
 }
 
-function showAnnotationsForGit(settings: Settings, diffFiles: string[], gitCommand: (filePath: string) => string) {
+function showAnnotationsForGit(settings: Settings, diffFiles: string[], gitCommand: (filePath: string) => string) : Thenable<any> {
   let filePathsDiffs: { [key: string]: number[][] } = {};
   // iterate over files in diff and gather diff ranges
   for (let filePath of diffFiles) {
@@ -74,8 +79,8 @@ function showAnnotationsForGit(settings: Settings, diffFiles: string[], gitComma
     filePathsDiffs[filePath] = diffRanges;
   }
 
-  let outputChannel = vscode.window.createOutputChannel("Todos in scope");
-  textDocumentsFromMatchedFiles(
+  settings.outputChannel.clear();
+  return textDocumentsFromMatchedFiles(
     settings, `{${diffFiles.join(",")}}`, settings.excludedFiles,
     (filePath, line, match) => {
       let fileRanges = filePathsDiffs[filePath.replace(`${settings.curentFolderPath}/`, "")];
@@ -83,24 +88,24 @@ function showAnnotationsForGit(settings: Settings, diffFiles: string[], gitComma
         return;
       }
       if (anyRangeIncludes(fileRanges, line)) {
-        outputChannel.appendLine(`${filePath}:${line} : \n\t${match}`);
+        settings.outputChannel.appendLine(`${filePath}:${line} : \n\t${match}`);
       }
     },
-    () => outputChannel.append(""),
-    () => outputChannel.show()
+    () => settings.outputChannel.append(""),
+    () => settings.outputChannel.show()
   );
 }
 
-function showAnnotationsForProject(settings: Settings) {
-  let outputChannel = vscode.window.createOutputChannel("Todos in scope");
+function showAnnotationsForProject(settings: Settings) : Thenable<any> {
+  settings.outputChannel.clear();
 
-  textDocumentsFromMatchedFiles(
+  return textDocumentsFromMatchedFiles(
     settings, settings.includedFiles, settings.excludedFiles,
     (filePath, line, match) => {
-      outputChannel.appendLine(`${filePath}:${line + 1} : \n\t${match}`);
+      settings.outputChannel.appendLine(`${filePath}:${line} : \n\t${match}`);
     },
-    () => outputChannel.append(""),
-    () => outputChannel.show()
+    () => settings.outputChannel.append(""),
+    () => settings.outputChannel.show()
   );
 }
 
@@ -109,21 +114,24 @@ function textDocumentsFromMatchedFiles(
   matchCallback: (filePath: string, line: number, match: string) => void,
   afterEachFileCallback: () => void,
   afterAllFilesCallback: () => void
-) {
-  vscode.workspace.findFiles(includeGlob, excludeGlob, settings.maxFiles).then((files) => {
-    files.forEach((file) => {
-      vscode.workspace.openTextDocument(file).then((file) => {
-        for (let match of file.getText().matchAll(settings.buildRegexp("annotation") as RegExp)) {
-          let line: vscode.TextLine | undefined = undefined;
-          if (match.index) {
-            line = file.lineAt(file.positionAt(match.index));
+) : Thenable<any> {
+  return new Promise<void>(resolve => {
+    vscode.workspace.findFiles(includeGlob, excludeGlob, settings.maxFiles).then((files) => {
+      files.forEach((file) => {
+        vscode.workspace.openTextDocument(file).then((file) => {
+          for (let match of file.getText().matchAll(settings.buildRegexp("annotation") as RegExp)) {
+            let line: vscode.TextLine | undefined = undefined;
+            if (match.index) {
+              line = file.lineAt(file.positionAt(match.index));
+            }
+            matchCallback(file.uri.path, (line?.lineNumber || 0) + 1, match[0].trim());
           }
-          matchCallback(file.uri.path, (line?.lineNumber || 0) + 1, match[0].trim());
-        }
+        });
+        afterEachFileCallback();
       });
-      afterEachFileCallback();
+      afterAllFilesCallback();
+      resolve();
     });
-    afterAllFilesCallback();
   });
 }
 

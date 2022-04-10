@@ -55,7 +55,8 @@ export class Settings {
     public keywordsForHook: string[],
     public keywords: Keyword = {},
     public tmpDecorationTypes: DecorationTypes = {},
-    public curentFolderPath: string = ""
+    public curentFolderPath: string = "",
+    public outputChannel: vscode.OutputChannel = vscode.window.createOutputChannel("Todos in scope")
   ) {}
 
   buildRegexp(useCase: string = "decoration"): RegExp | string {
@@ -98,6 +99,10 @@ export class Settings {
         overviewRulerColor: keyword.rulerColor || defaultStyle.rulerColor
       };
     });
+
+    if (!settings.outputChannel) {
+      settings.outputChannel = vscode.window.createOutputChannel("Todos in scope");
+    }
 
     let folders = vscode.workspace.workspaceFolders;
     if (folders) {
