@@ -51,7 +51,7 @@ function showAnnotationsForCommit(settings: Settings) : Thenable<any> {
   }
   return showAnnotationsForGit(
     settings, diffFiles,
-    (filePath) => systemCommands.runCommand(`git -C ${settings.curentFolderPath} diff --cached ${filePath}`)
+    (filePath) => systemCommands.runCommand(`git -C ${settings.curentFolderPath} diff --cached -U0 ${filePath}`)
   );
 }
 
@@ -73,8 +73,14 @@ function showAnnotationsForGit(settings: Settings, diffFiles: string[], gitComma
   for (let filePath of diffFiles) {
     let fileDiff = gitCommand(filePath);
     // '@@ -18,6 +18,23 @@', '18,23', index: 169 => "18,23" => ["18", "23"] => [18 - line number, 23 - count]
-    let diffRanges = [...fileDiff.matchAll(new RegExp("^@@.+\\+(\\d+,\\d+) @@", "gm"))]
+    let diffRanges = [...fileDiff.matchAll(new RegExp("^@@.+\\+(\\d+(,\\d+){0,1}) @@", "gm"))]
       .map((match) => match[1].split(",").map(str => parseInt(str)))
+      .map((arr) => {
+        if (arr.length === 1) {
+          arr.push(0);
+        }
+        return arr;
+      })
       .map(arr => range(arr[0], arr[0] + arr[1]));
     filePathsDiffs[filePath] = diffRanges;
   }
