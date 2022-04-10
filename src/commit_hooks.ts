@@ -103,15 +103,16 @@ function buildScript(settings: Settings): string {
     'todo_lines="";\n' +
     'while read st file; do\n' +
     '  if [ "$st" == \'D\' ]; then continue; fi\n' +
-    '  new_lines=$(git diff --cached ${file} 2>/dev/null | egrep -oi \'^@@ .+ \\+(\\d+),(\\d+) @@\' | egrep -oi \'\\+\\d+,\\d+\');\n' +
+    '  new_lines=$(git diff --cached -U0 -w ${file} 2>/dev/null | egrep -oi \'^@@ .+ \\+(\\d+)(,(\\d+)){0,1} @@\' | egrep -oi \'\\+\\d+(,\\d+){0,1}\');\n' +
     '  if [ "$new_lines" == "" ]; then continue; fi\n' +
     '  new_lines_arr=($new_lines);\n' +
     '  file_appended=false;\n' +
     '  for index in "${!new_lines_arr[@]}"\n' +
     '  do\n' +
-    '    line_and_count=$(egrep -oi \'\\d+,\\d+\' <<< "${new_lines_arr[index]}");\n' +
+    '    line_and_count=$(egrep -oi \'\\d+(,\\d+){0,1}\' <<< "${new_lines_arr[index]}");\n' +
     '    IFS="," read -a line_and_count_arr <<< $line_and_count;\n' +
     '    line_and_count=($line_and_count_arr);\n' +
+    '    if [ "${#line_and_count[@]}" = 1 ]; then line_and_count[${#line_and_count[@]}]=0; fi\n' +
     '    line_and_count_sum="$((line_and_count[0] + line_and_count[1]))";\n' +
     '    line_range=($(seq ${line_and_count[0]} $line_and_count_sum));\n' +
     '    for line in "${line_range[@]}"\n' +

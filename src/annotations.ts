@@ -51,7 +51,7 @@ function showAnnotationsForCommit(settings: Settings) : Thenable<any> {
   }
   return showAnnotationsForGit(
     settings, diffFiles,
-    (filePath) => systemCommands.runCommand(`git -C ${settings.curentFolderPath} diff --cached -U0 ${filePath}`)
+    (filePath) => systemCommands.runCommand(`git -C ${settings.curentFolderPath} diff --cached -U0 -w ${filePath}`)
   );
 }
 
@@ -142,7 +142,10 @@ function textDocumentsFromMatchedFiles(
 }
 
 function range(start: number, end: number): number[] {
-  return Array.from({length: (end - start)}, (v, k) => k + start);
+  if ( end === start ) {
+    return [start];
+  };
+  return Array.from({length: (end - start)}, (_, k) => k + start);
 }
 
 function anyRangeIncludes(ranges: number[][], num: number): boolean {
