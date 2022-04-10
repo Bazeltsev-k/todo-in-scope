@@ -58,17 +58,19 @@ export class Settings {
     public curentFolderPath: string = ""
   ) {}
 
-  buildRegexp(useCase: string = "decoration"): RegExp {
+  buildRegexp(useCase: string = "decoration"): RegExp | string {
     let usedKeywords = "";
     switch(useCase) {
       case "decoration": {
         usedKeywords = Object.keys(this.keywords).join("|");
+        break;
       }
       case "annotation": {
         usedKeywords = this.keywordsForAnnotation.join("|");
+        break;
       }
       case "hook": {
-        usedKeywords = this.keywordsForHook.join("|");
+        return `^ {0,}.+(${this.keywordsForHook.join("|")})(\\(\\w+\\)){0,}:.+$`;
       }
     }
     return new RegExp(`^ {0,}.+(${usedKeywords})(\\(\\w+\\)){0,}:.+$`, "gm");
@@ -97,6 +99,10 @@ export class Settings {
       };
     });
 
+    let folders = vscode.workspace.workspaceFolders;
+    if (folders) {
+      settings.curentFolderPath = folders[0].uri.path;
+    }
     return settings;
   }
 }

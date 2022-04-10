@@ -5,6 +5,7 @@ import * as vscode from "vscode";
 import { Settings } from "./settings";
 import * as decorations from "./decorations";
 import * as annotations from "./annotations";
+import * as commitHooks from "./commit_hooks";
 
 export function activate(context: vscode.ExtensionContext) {
   let workspace = vscode.workspace;
@@ -34,8 +35,8 @@ export function activate(context: vscode.ExtensionContext) {
     })
   );
   context.subscriptions.push(
-    vscode.commands.registerCommand("todo-in-scope.add-precommit-hook", () => {
-      vscode.window.showErrorMessage("TODO: add functionality for this command");
+    vscode.commands.registerCommand("todo-in-scope.toggle-precommit-hook", () => {
+      commitHooks.togglePreCommitHook(settings, context);
     })
   );
 
@@ -52,8 +53,10 @@ export function activate(context: vscode.ExtensionContext) {
     settings = Settings.settingsFromConfig();
     if (settings.isEnabled) {
       decorations.applyDecorations(activeEditor, settings);
+      commitHooks.reapplyHook(settings, context);
     } else {
       decorations.clearDecorations(settings.tmpDecorationTypes);
+      commitHooks.removeHook(settings, context, true);
     }
   }, null, context.subscriptions);
 

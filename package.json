@@ -32,8 +32,8 @@
         "title": "Todo in scope: List todos in current commit"
       },
       {
-        "command": "todo-in-scope.add-precommit-hook",
-        "title": "Todo in scope: Add precommit hook"
+        "command": "todo-in-scope.toggle-precommit-hook",
+        "title": "Todo in scope: Toggle precommit hook"
       }
     ],
     "configuration": {

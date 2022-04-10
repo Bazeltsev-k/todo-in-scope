@@ -13,7 +13,7 @@ export function applyDecorations(activeEditor: vscode.TextEditor | undefined, se
 
   // Receiving regex of current editor for highlighting
   let text = activeEditor.document.getText();
-  let result = text.matchAll(settings.buildRegexp());
+  let result = text.matchAll(settings.buildRegexp() as RegExp);
 
   let decorationTypes: DecorationTypes = {};
 

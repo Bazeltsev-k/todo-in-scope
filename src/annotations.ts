@@ -3,20 +3,19 @@ import * as vscode from "vscode";
 
 // Misc
 import { Settings } from "./settings";
-import * as child_process from "child_process";
+import * as git from "./git";
+import * as systemCommands from "./system_commands";
 
 export function annotate(scope: string, settings: Settings) {
   // Validations
   if (!settings.isEnabled) {
     return;
   }
-  let folders = vscode.workspace.workspaceFolders;
-  if (!folders) {
+  if (!settings.curentFolderPath) {
     vscode.window.showErrorMessage("An open project is needed for this command to work");
     return;
   }
-  settings.curentFolderPath = folders[0].uri.path;
-  if (["branch", "commit"].includes(scope) && !checkGitInitialized(settings.curentFolderPath)) {
+  if (["branch", "commit"].includes(scope) && !git.checkGitInitialized(settings.curentFolderPath)) {
     vscode.window.showErrorMessage("Git should be initialized in current project for this command to work");
     return;
   }
@@ -41,25 +40,25 @@ function showAnnotations(scope: string, settings: Settings) {
 }
 
 function showAnnotationsForCommit(settings: Settings) {
-  let diffFiles = runCommand(`git -C ${settings.curentFolderPath} diff --name-only`).trim().split("\n");
-  if (diffFiles.length === 0) {
+  let diffFiles = systemCommands.runCommand(`git -C ${settings.curentFolderPath} diff --name-only`).trim().split("\n");
+  if (diffFiles.length === 1 && diffFiles[0] === "") {
     vscode.window.showInformationMessage("No diff found");
   }
   showAnnotationsForGit(
     settings, diffFiles,
-    (filePath) => runCommand(`git -C ${settings.curentFolderPath} diff ${filePath}`)
+    (filePath) => systemCommands.runCommand(`git -C ${settings.curentFolderPath} diff ${filePath}`)
   );
 }
 
 function showAnnotationsForBranch(settings: Settings) {
   let mainBranch = "master";
-  let diffFiles = runCommand(`git -C ${settings.curentFolderPath} diff ${mainBranch} --name-only`).trim().split("\n");
+  let diffFiles = systemCommands.runCommand(`git -C ${settings.curentFolderPath} diff ${mainBranch} --name-only`).trim().split("\n");
   if (diffFiles.length === 0) {
     vscode.window.showInformationMessage(`No diff between current branch and ${mainBranch}`);
   }
   showAnnotationsForGit(
     settings, diffFiles,
-    (filePath) => runCommand(`git -C ${settings.curentFolderPath} diff ${mainBranch}:${filePath} ${filePath}`)
+    (filePath) => systemCommands.runCommand(`git -C ${settings.curentFolderPath} diff ${mainBranch}:${filePath} ${filePath}`)
   );
 }
 
@@ -114,7 +113,7 @@ function textDocumentsFromMatchedFiles(
   vscode.workspace.findFiles(includeGlob, excludeGlob, settings.maxFiles).then((files) => {
     files.forEach((file) => {
       vscode.workspace.openTextDocument(file).then((file) => {
-        for (let match of file.getText().matchAll(settings.buildRegexp("annotation"))) {
+        for (let match of file.getText().matchAll(settings.buildRegexp("annotation") as RegExp)) {
           let line: vscode.TextLine | undefined = undefined;
           if (match.index) {
             line = file.lineAt(file.positionAt(match.index));
@@ -126,15 +125,6 @@ function textDocumentsFromMatchedFiles(
     });
     afterAllFilesCallback();
   });
-}
-
-function checkGitInitialized(path: string) {
-  try { 
-    child_process.execSync(`[ -d ${path}/.git ] && echo .git >&1`);
-  } catch(Error) {
-    return false;
-  }
-  return true;
 }
 
 function range(start: number, end: number): number[] {
@@ -150,13 +140,4 @@ function anyRangeIncludes(ranges: number[][], num: number): boolean {
     }
   }
   return false;
-}
-
-function runCommand(command: string): string {
-  try { 
-    return child_process.execSync(command).toString();
-  } catch(e: any) {
-    vscode.window.showErrorMessage(e.message);
-    throw new Error("Something went wrong");
-  }
 }
