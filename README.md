@@ -14,15 +14,15 @@ For you to not forget about those TODOs and to not push them into repository - e
 
 Highlight keywords:
 
-![](https://github.com/Bazeltsev-k/todo-in-scope/blob/master/readme_files/highlight_showcase.gif)
+![](https://github.com/Bazeltsev-k/todo-in-scope/blob/master/readme_files/highlight_showcase.gif?raw=true)
 
 Annotate todos in project/branch/commit:
 
-![](https://github.com/Bazeltsev-k/todo-in-scope/blob/master/readme_files/annotations_showcase.gif)
+![](https://github.com/Bazeltsev-k/todo-in-scope/blob/master/readme_files/annotations_showcase.gif?raw=true)
 
 Add pre-commit hook:
 
-![](https://github.com/Bazeltsev-k/todo-in-scope/blob/master/readme_files/hook_showcase.gif)
+![](https://github.com/Bazeltsev-k/todo-in-scope/blob/master/readme_files/hook_showcase.gif?raw=true)
 ## Commands
 
 - Toggle todos highlight
