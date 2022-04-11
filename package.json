@@ -2,6 +2,7 @@
   "name": "todo-in-scope",
   "displayName": "todo-in-scope",
   "description": "TODO highlighter, that is able to cherry-pick todos in your current scope (all project / current branch / current commit)",
+  "repository": "https://github.com/Bazeltsev-k/todo-in-scope",
   "version": "1.0.1",
   "engines": {
     "vscode": "^1.65.0"
