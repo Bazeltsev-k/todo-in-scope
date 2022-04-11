@@ -11,9 +11,6 @@ const SCRIPT_END = "####GIT HOOK FROM TODO-IN-SCOPE VSCODE EXTENSION END####\n";
 
 export function togglePreCommitHook(settings: Settings, context: vscode.ExtensionContext) {
   // Validations
-  if (!settings.isEnabled) {
-    return;
-  }
   if (!settings.curentFolderPath) {
     vscode.window.showErrorMessage("An open project is needed for this command to work");
     return;
@@ -30,10 +27,9 @@ export function togglePreCommitHook(settings: Settings, context: vscode.Extensio
   }
 }
 
-export function removeHook(settings: Settings, context: vscode.ExtensionContext, system: boolean = false) {
+export function removeHook(settings: Settings, context: vscode.ExtensionContext) {
   vscode.workspace.openTextDocument(`${settings.curentFolderPath}/.git/hooks/pre-commit`).then((file) => {
     if (!file.getText().match(`${SCRIPT_START}`)) {
-      if (system) { return; }
       context.globalState.update("todo-in-scope.precommit-hook-set", false);
       vscode.window.showErrorMessage("Trying to remove non-existing pre-commit hook. Please try toggle again");
       return;

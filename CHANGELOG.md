@@ -1,9 +1,9 @@
 # Change Log
+## [1.0.1] - 2022-04-11
+### Added
+- `mainBranch` setting
+### Updated
+- Detached `isEnabled` setting from annotation and pre-commit hook functionalities
 
-All notable changes to the "todo-in-scope" extension will be documented in this file.
-
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
-
-## [Unreleased]
-
-- Initial release
+## [1.0.0] - 2022-04-11
+### Initial release

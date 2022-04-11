@@ -8,9 +8,6 @@ import * as systemCommands from "./system_commands";
 
 export function annotate(scope: string, settings: Settings) {
   // Validations
-  if (!settings.isEnabled) {
-    return;
-  }
   if (!settings.curentFolderPath) {
     vscode.window.showErrorMessage("An open project is needed for this command to work");
     return;
@@ -56,7 +53,7 @@ function showAnnotationsForCommit(settings: Settings) : Thenable<any> {
 }
 
 function showAnnotationsForBranch(settings: Settings) : Thenable<any> {
-  let mainBranch = "master";
+  let mainBranch = settings.mainBranch;
   let diffFiles = systemCommands.runCommand(`git -C ${settings.curentFolderPath} diff ${mainBranch} --name-only --diff-filter=d`).trim().split("\n");
   if (diffFiles.length === 0) {
     vscode.window.showInformationMessage(`No diff between current branch and ${mainBranch}`);

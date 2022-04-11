@@ -2,7 +2,7 @@
   "name": "todo-in-scope",
   "displayName": "todo-in-scope",
   "description": "TODO highlighter, that is able to cherry-pick todos in your current scope (all project / current branch / current commit)",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "engines": {
     "vscode": "^1.65.0"
   },
@@ -96,6 +96,11 @@
           "type": "number",
           "description": "Max number of filess that will be processed",
           "default": 2500
+        },
+        "todo-in-scope.mainBranch": {
+          "type": "string",
+          "description": "Main branch to consider during commit annotation",
+          "default": "master"
         },
         "todo-in-scope.keywordsForAnnotation": {
           "type": "array",

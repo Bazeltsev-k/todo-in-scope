@@ -53,11 +53,10 @@ export function activate(context: vscode.ExtensionContext) {
     settings = Settings.settingsFromConfig();
     if (settings.isEnabled) {
       decorations.applyDecorations(activeEditor, settings);
-      commitHooks.reapplyHook(settings, context);
     } else {
       decorations.clearDecorations(settings.tmpDecorationTypes);
-      commitHooks.removeHook(settings, context, true);
     }
+    commitHooks.reapplyHook(settings, context);
   }, null, context.subscriptions);
 
   workspace.onDidChangeTextDocument((event) => {

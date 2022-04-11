@@ -43,13 +43,14 @@ Add pre-commit hook:
 
 This extension contributes the following settings:
 
-* `todo-in-scope.isEnabled`: `true` | Expected value: bool - enable/disable this extension
+* `todo-in-scope.isEnabled`: `true` | Expected value: bool - enable/disable highlights
 * `todo-in-scope.defaultStyle.color`: `black` | Expected value: web color, e.g. black/#FFF - for default keyword text color
 * `todo-in-scope.defaultStyle.backgroundColor`: `yellow` | Expected value: web color, e.g. black/#FFF - for default background color of a keyword
 * `todo-in-scope.defaultStyle.rulerColor`: `yellow` | Expected value: web color, e.g. black/#FFF - for default ruler color in the scroll bar
 * `todo-in-scope.includedFiles`: `["**/*.rb","**/*.py","**/*.js","**/*.jsx","**/*.ts","**/*.tsx","**/*.html","**/*.php","**/*.css","**/*.scss"]` | Expected value: array of globs - for files that will be included during annotation of the whole project
 * `todo-in-scope.excludedFiles`: `["**/node_modules/**","**/bower_components/**","**/dist/**","**/build/**","**/.vscode/**","**/.github/**","**/_output/**","**/*.min.*","**/*.map","**/.next/**"]` | Expected value: array of globs - for files that will be excluded during annotation of the whole project
 * `todo-in-scope.maxFiles`: `2500` | Expected value: number - Max number of files that will be annotated
+* `todo-in-scope.mainBranch`: `master` | Expected value: string - Main branch to be considered during commit annotation
 * `todo-in-scope.keywordsForAnnotation`: `["TODO", "DEBUG"]` | Expected value: array of strings - Keywords that will be picked during annotation
 * `todo-in-scope.keywordsForHook`: `["TODO"]` | Expected value: array of strings - Keywords that will be picked for pre-commit hook
 * `todo-in-scope.keywords`:
@@ -77,6 +78,10 @@ This extension contributes the following settings:
 ```
 | Expected value: array of objects. Object should consist of { word: string, color?: string, backgroundColor?: string, rulerColor?: string } - used for keywords during highlighting.
 
+### 1.0.1
+
+- Use main branch from settings during commit annotation
+- Detach pre-commit hook from isEnabled setting. Instead pre-commit toggle should be used
 ### 1.0.0
 
 Initial release

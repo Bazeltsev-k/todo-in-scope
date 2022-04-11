@@ -56,7 +56,8 @@ export class Settings {
     public keywords: Keyword = {},
     public tmpDecorationTypes: DecorationTypes = {},
     public curentFolderPath: string = "",
-    public outputChannel: vscode.OutputChannel = vscode.window.createOutputChannel("Todos in scope")
+    public outputChannel: vscode.OutputChannel = vscode.window.createOutputChannel("Todos in scope"),
+    public mainBranch: string = "master"
   ) {}
 
   buildRegexp(useCase: string = "decoration"): RegExp | string {
@@ -99,7 +100,7 @@ export class Settings {
         overviewRulerColor: keyword.rulerColor || defaultStyle.rulerColor
       };
     });
-
+    settings.mainBranch = configuration.get("mainBranch") || "master";
     if (!settings.outputChannel) {
       settings.outputChannel = vscode.window.createOutputChannel("Todos in scope");
     }
