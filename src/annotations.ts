@@ -45,7 +45,7 @@ function showAnnotations(scope: string, settings: Settings) : Thenable<any> | un
 }
 
 function showAnnotationsForCommit(settings: Settings) : Thenable<any> {
-  let diffFiles = systemCommands.runCommand(`git -C ${settings.curentFolderPath} diff --name-only --cached`).trim().split("\n");
+  let diffFiles = systemCommands.runCommand(`git -C ${settings.curentFolderPath} diff --name-only --cached --diff-filter=d`).trim().split("\n");
   if (diffFiles.length === 1 && diffFiles[0] === "") {
     vscode.window.showInformationMessage("No diff found");
   }
@@ -57,7 +57,7 @@ function showAnnotationsForCommit(settings: Settings) : Thenable<any> {
 
 function showAnnotationsForBranch(settings: Settings) : Thenable<any> {
   let mainBranch = "master";
-  let diffFiles = systemCommands.runCommand(`git -C ${settings.curentFolderPath} diff ${mainBranch} --name-only`).trim().split("\n");
+  let diffFiles = systemCommands.runCommand(`git -C ${settings.curentFolderPath} diff ${mainBranch} --name-only --diff-filter=d`).trim().split("\n");
   if (diffFiles.length === 0) {
     vscode.window.showInformationMessage(`No diff between current branch and ${mainBranch}`);
   }
