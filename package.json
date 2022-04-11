@@ -3,9 +3,9 @@
   "displayName": "todo-in-scope",
   "description": "TODO highlighter, that is able to cherry-pick todos in your current scope (all project / current branch / current commit)",
   "repository": "https://github.com/Bazeltsev-k/todo-in-scope",
-  "icon": "https://raw.githubusercontent.com/Bazeltsev-k/todo-in-scope/master/assets/todo_image.png",
+  "icon": "assets/todo_image.png",
   "publisher": "kirillbazeltsev",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "engines": {
     "vscode": "^1.65.0"
   },

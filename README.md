@@ -80,12 +80,12 @@ This extension contributes the following settings:
 ```
 | Expected value: array of objects. Object should consist of { word: string, color?: string, backgroundColor?: string, rulerColor?: string } - used for keywords during highlighting.
 
+### 1.0.2
+- Minor fixes
 ### 1.0.1
-
 - Use main branch from settings during commit annotation
 - Detach pre-commit hook from isEnabled setting. Instead pre-commit toggle should be used
 ### 1.0.0
-
-Initial release
+- Initial release
 
 -----------------------------------------------------------------------------------------------------------
