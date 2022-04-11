@@ -1,6 +1,10 @@
-## todo-in-scope README
+# todo-in-scope
 
 Extension to highlight and list specific keywords in VSCode project.
+
+Inspired by [**Tsoding**](https://www.youtube.com/c/TsodingDaily) style of coding, when he puts TODOs in error calls.
+
+I.e. this extension encourages adding TODOs comments before implementation and removing them when implementation is in place. For you not to forget about those TODOs and to not push them into repository extension highlights them, and has commands to list TODOs in current project/branch/commit. Also it can add a pre-commit hook, so you won't forget to attend to TODO comment before committing.
 
 ## Features
 
@@ -10,11 +14,11 @@ Highlight keywords:
 
 Annotate todos in project/branch/commit:
 
-![](./readme_files/annotations_showcase.mov)
+![](./readme_files/annotations_showcase.gif)
 
 Add pre-commit hook:
 
-![](./readme_files/hook_showcase.mov)
+![](./readme_files/hook_showcase.gif)
 ## Commands
 
 - Toggle todos highlight
