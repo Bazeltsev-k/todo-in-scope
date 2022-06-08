@@ -5,7 +5,7 @@
   "repository": "https://github.com/Bazeltsev-k/todo-in-scope",
   "icon": "assets/todo_image.png",
   "publisher": "kirillbazeltsev",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "engines": {
     "vscode": "^1.65.0"
   },

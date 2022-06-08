@@ -20,7 +20,7 @@ export function annotate(scope: string, settings: Settings) {
     location: vscode.ProgressLocation.Notification,
     title: "Annotating files",
     cancellable: false
-  }, (progress) => {
+  }, (progress: any) => {
     progress.report({ message: "Going through files, picking todos" });
     return showAnnotations(scope, settings) as Thenable<any>;
   });
@@ -42,13 +42,13 @@ function showAnnotations(scope: string, settings: Settings) : Thenable<any> | un
 }
 
 function showAnnotationsForCommit(settings: Settings) : Thenable<any> {
-  let diffFiles = systemCommands.runCommand(`git -C ${settings.curentFolderPath} diff --name-only --cached --diff-filter=d`).trim().split("\n");
+  let diffFiles = systemCommands.runCommand(`git -C ${settings.curentFolderPath} diff HEAD --name-only --diff-filter=d`).trim().split("\n");
   if (diffFiles.length === 1 && diffFiles[0] === "") {
     vscode.window.showInformationMessage("No diff found");
   }
   return showAnnotationsForGit(
     settings, diffFiles,
-    (filePath) => systemCommands.runCommand(`git -C ${settings.curentFolderPath} diff --cached -U0 -w ${filePath}`)
+    (filePath) => systemCommands.runCommand(`git -C ${settings.curentFolderPath} diff HEAD -U0 -w ${filePath}`)
   );
 }
 
